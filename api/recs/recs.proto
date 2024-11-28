@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package recs;
+
+option go_package = "github.com/webbsalad/storya-recs-backend/recs;recs";
+
+message Tag {
+    string id = 1;
+    string name = 2;
+}
+
+message Item {
+    string id = 1;
+    string title = 2;
+    int32 year = 3;
+    repeated Tag tags = 5;
+}
+
+
+message TagRating {
+    Tag tag = 1;
+    int32 rating = 2;
+}
+
+message Perference {
+    string user_id = 1;
+    repeated TagRating tag_ratings = 2;
+}

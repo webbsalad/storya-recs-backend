@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package recs;
+
+import "api/recs/recs.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/webbsalad/storya-recs-backend/recs;recs";
+
+service RecsService {
+    rpc GetPreferences(UserID) returns (Preferences) {
+        option (google.api.http) = {
+            get: "/preferences/{user_id}"
+        };
+    };
+
+    rpc UpdatePreferences(UpdatePreferencesRequest) returns (Preferences) {
+        option (google.api.http) = {
+            patch: "/preferences/{user_id}"
+        };
+    };
+
+    rpc NewRec(UserID) returns (NewRecResponse) {
+        option (google.api.http) = {
+            get: "/new-rec",
+        };
+    };
+
+    rpc DeleteDpeferences(UserID) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/users/{user_id}"
+        };
+    };
+
+}
+
+message UserID {
+    string user_id = 1 [(validate.rules).string.uuid = true];
+}
+
+message Preferences {
+    repeated TagRating tag_ratings = 1;
+}
+
+message UpdatePreferencesRequest {
+    string user_id = 1;
+    repeated TagRating tag_ratings = 2;
+}
+
+message NewRecResponse {
+    repeated Item items = 1;
+}
