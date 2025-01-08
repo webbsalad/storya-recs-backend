@@ -35,6 +35,9 @@ var (
 	_ = sort.Sort
 )
 
+// define the regex for a UUID once up-front
+var _recs_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+
 // Validate checks the field values on Tag with the rules defined in the proto
 // definition for this message. If any rules are violated, the first error
 // encountered is returned, or nil if there are no violations.
@@ -55,8 +58,6 @@ func (m *Tag) validate(all bool) error {
 	}
 
 	var errors []error
-
-	// no validation rules for Id
 
 	// no validation rules for Name
 
@@ -158,11 +159,52 @@ func (m *Item) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if err := m._validateUuid(m.GetId()); err != nil {
+		err = ItemValidationError{
+			field:  "Id",
+			reason: "value must be a valid UUID",
+			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Title
 
 	// no validation rules for Year
+
+	// no validation rules for Type
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ItemValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ItemValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ItemValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	for idx, item := range m.GetTags() {
 		_, _ = idx, item
@@ -200,6 +242,14 @@ func (m *Item) validate(all bool) error {
 
 	if len(errors) > 0 {
 		return ItemMultiError(errors)
+	}
+
+	return nil
+}
+
+func (m *Item) _validateUuid(uuid string) error {
+	if matched := _recs_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
 	}
 
 	return nil
@@ -275,22 +325,22 @@ var _ interface {
 	ErrorName() string
 } = ItemValidationError{}
 
-// Validate checks the field values on TagRating with the rules defined in the
+// Validate checks the field values on RatedTag with the rules defined in the
 // proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
-func (m *TagRating) Validate() error {
+func (m *RatedTag) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on TagRating with the rules defined in
+// ValidateAll checks the field values on RatedTag with the rules defined in
 // the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in TagRatingMultiError, or nil
+// result is a list of violation errors wrapped in RatedTagMultiError, or nil
 // if none found.
-func (m *TagRating) ValidateAll() error {
+func (m *RatedTag) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *TagRating) validate(all bool) error {
+func (m *RatedTag) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -301,7 +351,7 @@ func (m *TagRating) validate(all bool) error {
 		switch v := interface{}(m.GetTag()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, TagRatingValidationError{
+				errors = append(errors, RatedTagValidationError{
 					field:  "Tag",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -309,7 +359,7 @@ func (m *TagRating) validate(all bool) error {
 			}
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
-				errors = append(errors, TagRatingValidationError{
+				errors = append(errors, RatedTagValidationError{
 					field:  "Tag",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -318,7 +368,7 @@ func (m *TagRating) validate(all bool) error {
 		}
 	} else if v, ok := interface{}(m.GetTag()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return TagRatingValidationError{
+			return RatedTagValidationError{
 				field:  "Tag",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -326,21 +376,21 @@ func (m *TagRating) validate(all bool) error {
 		}
 	}
 
-	// no validation rules for Rating
+	// no validation rules for Value
 
 	if len(errors) > 0 {
-		return TagRatingMultiError(errors)
+		return RatedTagMultiError(errors)
 	}
 
 	return nil
 }
 
-// TagRatingMultiError is an error wrapping multiple validation errors returned
-// by TagRating.ValidateAll() if the designated constraints aren't met.
-type TagRatingMultiError []error
+// RatedTagMultiError is an error wrapping multiple validation errors returned
+// by RatedTag.ValidateAll() if the designated constraints aren't met.
+type RatedTagMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m TagRatingMultiError) Error() string {
+func (m RatedTagMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -349,11 +399,11 @@ func (m TagRatingMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m TagRatingMultiError) AllErrors() []error { return m }
+func (m RatedTagMultiError) AllErrors() []error { return m }
 
-// TagRatingValidationError is the validation error returned by
-// TagRating.Validate if the designated constraints aren't met.
-type TagRatingValidationError struct {
+// RatedTagValidationError is the validation error returned by
+// RatedTag.Validate if the designated constraints aren't met.
+type RatedTagValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -361,22 +411,22 @@ type TagRatingValidationError struct {
 }
 
 // Field function returns field value.
-func (e TagRatingValidationError) Field() string { return e.field }
+func (e RatedTagValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e TagRatingValidationError) Reason() string { return e.reason }
+func (e RatedTagValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e TagRatingValidationError) Cause() error { return e.cause }
+func (e RatedTagValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e TagRatingValidationError) Key() bool { return e.key }
+func (e RatedTagValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e TagRatingValidationError) ErrorName() string { return "TagRatingValidationError" }
+func (e RatedTagValidationError) ErrorName() string { return "RatedTagValidationError" }
 
 // Error satisfies the builtin error interface
-func (e TagRatingValidationError) Error() string {
+func (e RatedTagValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -388,14 +438,14 @@ func (e TagRatingValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sTagRating.%s: %s%s",
+		"invalid %sRatedTag.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = TagRatingValidationError{}
+var _ error = RatedTagValidationError{}
 
 var _ interface {
 	Field() string
@@ -403,79 +453,74 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = TagRatingValidationError{}
+} = RatedTagValidationError{}
 
-// Validate checks the field values on Perference with the rules defined in the
+// Validate checks the field values on Preference with the rules defined in the
 // proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
-func (m *Perference) Validate() error {
+func (m *Preference) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on Perference with the rules defined in
+// ValidateAll checks the field values on Preference with the rules defined in
 // the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in PerferenceMultiError, or
+// result is a list of violation errors wrapped in PreferenceMultiError, or
 // nil if none found.
-func (m *Perference) ValidateAll() error {
+func (m *Preference) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *Perference) validate(all bool) error {
+func (m *Preference) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for UserId
-
-	for idx, item := range m.GetTagRatings() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, PerferenceValidationError{
-						field:  fmt.Sprintf("TagRatings[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, PerferenceValidationError{
-						field:  fmt.Sprintf("TagRatings[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return PerferenceValidationError{
-					field:  fmt.Sprintf("TagRatings[%v]", idx),
+	if all {
+		switch v := interface{}(m.GetTag()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, PreferenceValidationError{
+					field:  "Tag",
 					reason: "embedded message failed validation",
 					cause:  err,
-				}
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, PreferenceValidationError{
+					field:  "Tag",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
 			}
 		}
-
+	} else if v, ok := interface{}(m.GetTag()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return PreferenceValidationError{
+				field:  "Tag",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
 	}
 
+	// no validation rules for Value
+
 	if len(errors) > 0 {
-		return PerferenceMultiError(errors)
+		return PreferenceMultiError(errors)
 	}
 
 	return nil
 }
 
-// PerferenceMultiError is an error wrapping multiple validation errors
-// returned by Perference.ValidateAll() if the designated constraints aren't met.
-type PerferenceMultiError []error
+// PreferenceMultiError is an error wrapping multiple validation errors
+// returned by Preference.ValidateAll() if the designated constraints aren't met.
+type PreferenceMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m PerferenceMultiError) Error() string {
+func (m PreferenceMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -484,11 +529,11 @@ func (m PerferenceMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m PerferenceMultiError) AllErrors() []error { return m }
+func (m PreferenceMultiError) AllErrors() []error { return m }
 
-// PerferenceValidationError is the validation error returned by
-// Perference.Validate if the designated constraints aren't met.
-type PerferenceValidationError struct {
+// PreferenceValidationError is the validation error returned by
+// Preference.Validate if the designated constraints aren't met.
+type PreferenceValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -496,22 +541,22 @@ type PerferenceValidationError struct {
 }
 
 // Field function returns field value.
-func (e PerferenceValidationError) Field() string { return e.field }
+func (e PreferenceValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e PerferenceValidationError) Reason() string { return e.reason }
+func (e PreferenceValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e PerferenceValidationError) Cause() error { return e.cause }
+func (e PreferenceValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e PerferenceValidationError) Key() bool { return e.key }
+func (e PreferenceValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e PerferenceValidationError) ErrorName() string { return "PerferenceValidationError" }
+func (e PreferenceValidationError) ErrorName() string { return "PreferenceValidationError" }
 
 // Error satisfies the builtin error interface
-func (e PerferenceValidationError) Error() string {
+func (e PreferenceValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -523,14 +568,14 @@ func (e PerferenceValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sPerference.%s: %s%s",
+		"invalid %sPreference.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = PerferenceValidationError{}
+var _ error = PreferenceValidationError{}
 
 var _ interface {
 	Field() string
@@ -538,4 +583,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = PerferenceValidationError{}
+} = PreferenceValidationError{}
