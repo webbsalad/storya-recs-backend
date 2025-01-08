@@ -21,6 +21,56 @@ func NewRepository(db *sqlx.DB) (recs.Repository, error) {
 	return &Repository{db: db}, nil
 }
 
+func (r *Repository) GetPreferences(ctx context.Context, userID model.UserID) ([]model.Preference, error) {
+	var preferences []Preferences
+
+	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	selectTagIDsQuery := psql.
+		Select("tag_id", "value").
+		From("user_preferences").
+		Where(
+			sq.Eq{"user_id": userID.String()},
+		)
+
+	q, args, err := selectTagIDsQuery.ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("select tag ids query: %w", err)
+	}
+
+	if err = r.db.SelectContext(ctx, &preferences, q, args...); err != nil {
+		return nil, fmt.Errorf("exec select tag ids query: %w", err)
+	}
+
+	userPreferences := make([]model.Preference, len(preferences))
+	for i, preference := range preferences {
+		var tag Tag
+		selectTagNamesQuery := psql.
+			Select("name").
+			From("tag").
+			Where(
+				sq.Eq{"id": preference.TagID},
+			)
+
+		q, args, err := selectTagNamesQuery.ToSql()
+		if err != nil {
+			return nil, fmt.Errorf("build select tag names query: %w", err)
+		}
+
+		if err = r.db.GetContext(ctx, &tag, q, args...); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return nil, model.ErrTagNotFound
+			}
+			return nil, fmt.Errorf("select tag name: %w", err)
+		}
+
+		userPreferences[i].Tag.Name = tag.Name
+		userPreferences[i].Value = preference.Value
+	}
+
+	return userPreferences, nil
+
+}
+
 func (r *Repository) UpdatePreferences(ctx context.Context, userID model.UserID, ratedTags []model.RatedTag) ([]model.Preference, error) {
 	var tagsData []FullRatedTag
 
