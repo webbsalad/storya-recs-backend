@@ -32,7 +32,7 @@ var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
 func request_RecsService_GetPreferences_0(ctx context.Context, marshaler runtime.Marshaler, client RecsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserID
+	var protoReq GetPreferencesRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -58,7 +58,7 @@ func request_RecsService_GetPreferences_0(ctx context.Context, marshaler runtime
 }
 
 func local_request_RecsService_GetPreferences_0(ctx context.Context, marshaler runtime.Marshaler, server RecsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserID
+	var protoReq GetPreferencesRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -154,43 +154,43 @@ func local_request_RecsService_UpdatePreferences_0(ctx context.Context, marshale
 }
 
 var (
-	filter_RecsService_NewRec_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_RecsService_GetNewRec_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_RecsService_NewRec_0(ctx context.Context, marshaler runtime.Marshaler, client RecsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserID
+func request_RecsService_GetNewRec_0(ctx context.Context, marshaler runtime.Marshaler, client RecsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetNewRecRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecsService_NewRec_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecsService_GetNewRec_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.NewRec(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetNewRec(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_RecsService_NewRec_0(ctx context.Context, marshaler runtime.Marshaler, server RecsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserID
+func local_request_RecsService_GetNewRec_0(ctx context.Context, marshaler runtime.Marshaler, server RecsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetNewRecRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecsService_NewRec_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_RecsService_GetNewRec_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.NewRec(ctx, &protoReq)
+	msg, err := server.GetNewRec(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_RecsService_DeleteDpeferences_0(ctx context.Context, marshaler runtime.Marshaler, client RecsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserID
+func request_RecsService_DeletePeferences_0(ctx context.Context, marshaler runtime.Marshaler, client RecsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq DeletePreferencesRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -210,13 +210,13 @@ func request_RecsService_DeleteDpeferences_0(ctx context.Context, marshaler runt
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
 
-	msg, err := client.DeleteDpeferences(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.DeletePeferences(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_RecsService_DeleteDpeferences_0(ctx context.Context, marshaler runtime.Marshaler, server RecsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserID
+func local_request_RecsService_DeletePeferences_0(ctx context.Context, marshaler runtime.Marshaler, server RecsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq DeletePreferencesRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -236,7 +236,7 @@ func local_request_RecsService_DeleteDpeferences_0(ctx context.Context, marshale
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
 
-	msg, err := server.DeleteDpeferences(ctx, &protoReq)
+	msg, err := server.DeletePeferences(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -298,7 +298,7 @@ func RegisterRecsServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 
 	})
 
-	mux.Handle("GET", pattern_RecsService_NewRec_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_RecsService_GetNewRec_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -306,12 +306,12 @@ func RegisterRecsServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/recs.RecsService/NewRec", runtime.WithHTTPPathPattern("/new-rec"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/recs.RecsService/GetNewRec", runtime.WithHTTPPathPattern("/new-rec"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_RecsService_NewRec_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_RecsService_GetNewRec_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -319,11 +319,11 @@ func RegisterRecsServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_RecsService_NewRec_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_RecsService_GetNewRec_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_RecsService_DeleteDpeferences_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_RecsService_DeletePeferences_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -331,12 +331,12 @@ func RegisterRecsServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/recs.RecsService/DeleteDpeferences", runtime.WithHTTPPathPattern("/users/{user_id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/recs.RecsService/DeletePeferences", runtime.WithHTTPPathPattern("/users/{user_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_RecsService_DeleteDpeferences_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_RecsService_DeletePeferences_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -344,7 +344,7 @@ func RegisterRecsServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_RecsService_DeleteDpeferences_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_RecsService_DeletePeferences_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -433,47 +433,47 @@ func RegisterRecsServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 
 	})
 
-	mux.Handle("GET", pattern_RecsService_NewRec_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_RecsService_GetNewRec_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/recs.RecsService/NewRec", runtime.WithHTTPPathPattern("/new-rec"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/recs.RecsService/GetNewRec", runtime.WithHTTPPathPattern("/new-rec"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RecsService_NewRec_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_RecsService_GetNewRec_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RecsService_NewRec_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_RecsService_GetNewRec_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_RecsService_DeleteDpeferences_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_RecsService_DeletePeferences_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/recs.RecsService/DeleteDpeferences", runtime.WithHTTPPathPattern("/users/{user_id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/recs.RecsService/DeletePeferences", runtime.WithHTTPPathPattern("/users/{user_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RecsService_DeleteDpeferences_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_RecsService_DeletePeferences_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RecsService_DeleteDpeferences_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_RecsService_DeletePeferences_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -485,9 +485,9 @@ var (
 
 	pattern_RecsService_UpdatePreferences_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"preferences", "user_id"}, ""))
 
-	pattern_RecsService_NewRec_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"new-rec"}, ""))
+	pattern_RecsService_GetNewRec_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"new-rec"}, ""))
 
-	pattern_RecsService_DeleteDpeferences_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"users", "user_id"}, ""))
+	pattern_RecsService_DeletePeferences_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"users", "user_id"}, ""))
 )
 
 var (
@@ -495,7 +495,7 @@ var (
 
 	forward_RecsService_UpdatePreferences_0 = runtime.ForwardResponseMessage
 
-	forward_RecsService_NewRec_0 = runtime.ForwardResponseMessage
+	forward_RecsService_GetNewRec_0 = runtime.ForwardResponseMessage
 
-	forward_RecsService_DeleteDpeferences_0 = runtime.ForwardResponseMessage
+	forward_RecsService_DeletePeferences_0 = runtime.ForwardResponseMessage
 )

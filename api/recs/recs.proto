@@ -2,27 +2,43 @@ syntax = "proto3";
 
 package recs;
 
+import "google/protobuf/timestamp.proto";
+import "validate/validate.proto";
+
 option go_package = "github.com/webbsalad/storya-recs-backend/recs;recs";
 
+
+enum ContentType {
+    MOVIE = 0;
+    GAME = 1;
+    BOOK = 2;
+}
+
 message Tag {
-    string id = 1;
-    string name = 2;
+    string name = 1;
 }
 
 message Item {
-    string id = 1;
+    string id = 1 [(validate.rules).string.uuid = true];
     string title = 2;
     int32 year = 3;
-    repeated Tag tags = 5;
+    ContentType type = 4;
+    google.protobuf.Timestamp created_at = 5;
+    repeated Tag tags = 6;
 }
 
-
-message TagRating {
+message RatedTag {
     Tag tag = 1;
-    int32 rating = 2;
+    Value value = 2;
 }
 
-message Perference {
-    string user_id = 1;
-    repeated TagRating tag_ratings = 2;
+message Preference {
+    Tag tag = 1;
+    int32 value = 2;
+}
+
+enum Value {
+    Like = 0;
+    Neutral = 1;
+    Dislike = 2;
 }
