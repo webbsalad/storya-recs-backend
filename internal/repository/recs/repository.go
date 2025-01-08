@@ -7,5 +7,6 @@ import (
 )
 
 type Repository interface {
+	GetPreferences(ctx context.Context, userID model.UserID) ([]model.Preference, error)
 	UpdatePreferences(ctx context.Context, userID model.UserID, ratedTags []model.RatedTag) ([]model.Preference, error)
 }
