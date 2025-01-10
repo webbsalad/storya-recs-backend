@@ -183,3 +183,34 @@ func (r *Repository) UpdatePreferences(ctx context.Context, userID model.UserID,
 
 	return updatedPreferences, nil
 }
+
+func (r *Repository) DeletePeferences(ctx context.Context, userID model.UserID) error {
+	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+
+	query := psql.
+		Delete("user_preferences").
+		Where(
+			sq.Eq{"user_id": userID.String()},
+		)
+
+	q, args, err := query.ToSql()
+	if err != nil {
+		return fmt.Errorf("build delete query: %w", err)
+	}
+
+	res, err := r.db.ExecContext(ctx, q, args...)
+	if err != nil {
+		return fmt.Errorf("exec delete query: %w", err)
+	}
+
+	rowAffected, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("get affected rows: %w", err)
+	}
+
+	if rowAffected == 0 {
+		return model.ErrPreferencesNotFound
+	}
+
+	return nil
+}

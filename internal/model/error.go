@@ -12,5 +12,6 @@ var (
 )
 
 var (
-	ErrTagNotFound = fmt.Errorf("tag not found: %w", ErrNotFound)
+	ErrTagNotFound         = fmt.Errorf("tag not found: %w", ErrNotFound)
+	ErrPreferencesNotFound = fmt.Errorf("preferences not found: %w", ErrNotFound)
 )

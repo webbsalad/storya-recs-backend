@@ -28,9 +28,9 @@ service RecsService {
         };
     };
 
-    rpc DeletePeferences(DeletePreferencesRequest) returns (google.protobuf.Empty) {
+    rpc DeletePeferences(google.protobuf.Empty) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/users/{user_id}"
+            delete: "/users/"
         };
     };
 
@@ -61,6 +61,3 @@ message GetNewRecResponse {
     repeated string item_ids = 1;
 }
 
-message DeletePreferencesRequest {
-    string user_id = 1;
-}

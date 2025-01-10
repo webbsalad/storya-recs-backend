@@ -33,7 +33,7 @@ type RecsServiceClient interface {
 	GetPreferences(ctx context.Context, in *GetPreferencesRequest, opts ...grpc.CallOption) (*GetPreferencesResponse, error)
 	UpdatePreferences(ctx context.Context, in *UpdatePreferencesRequest, opts ...grpc.CallOption) (*UpdatePreferencesResponse, error)
 	GetNewRec(ctx context.Context, in *GetNewRecRequest, opts ...grpc.CallOption) (*GetNewRecResponse, error)
-	DeletePeferences(ctx context.Context, in *DeletePreferencesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeletePeferences(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type recsServiceClient struct {
@@ -74,7 +74,7 @@ func (c *recsServiceClient) GetNewRec(ctx context.Context, in *GetNewRecRequest,
 	return out, nil
 }
 
-func (c *recsServiceClient) DeletePeferences(ctx context.Context, in *DeletePreferencesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *recsServiceClient) DeletePeferences(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, RecsService_DeletePeferences_FullMethodName, in, out, cOpts...)
@@ -91,7 +91,7 @@ type RecsServiceServer interface {
 	GetPreferences(context.Context, *GetPreferencesRequest) (*GetPreferencesResponse, error)
 	UpdatePreferences(context.Context, *UpdatePreferencesRequest) (*UpdatePreferencesResponse, error)
 	GetNewRec(context.Context, *GetNewRecRequest) (*GetNewRecResponse, error)
-	DeletePeferences(context.Context, *DeletePreferencesRequest) (*emptypb.Empty, error)
+	DeletePeferences(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	mustEmbedUnimplementedRecsServiceServer()
 }
 
@@ -111,7 +111,7 @@ func (UnimplementedRecsServiceServer) UpdatePreferences(context.Context, *Update
 func (UnimplementedRecsServiceServer) GetNewRec(context.Context, *GetNewRecRequest) (*GetNewRecResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNewRec not implemented")
 }
-func (UnimplementedRecsServiceServer) DeletePeferences(context.Context, *DeletePreferencesRequest) (*emptypb.Empty, error) {
+func (UnimplementedRecsServiceServer) DeletePeferences(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePeferences not implemented")
 }
 func (UnimplementedRecsServiceServer) mustEmbedUnimplementedRecsServiceServer() {}
@@ -190,7 +190,7 @@ func _RecsService_GetNewRec_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _RecsService_DeletePeferences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeletePreferencesRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -202,7 +202,7 @@ func _RecsService_DeletePeferences_Handler(srv interface{}, ctx context.Context,
 		FullMethod: RecsService_DeletePeferences_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecsServiceServer).DeletePeferences(ctx, req.(*DeletePreferencesRequest))
+		return srv.(RecsServiceServer).DeletePeferences(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
