@@ -43,7 +43,7 @@ func TestService_DeletePreferences(t *testing.T) {
 		},
 
 		{
-			name: "user not found",
+			name: "preferences not found",
 			mocks: func(tc testCase, deps *serviceTestDeps) {
 				deps.recsRepository.EXPECT().
 					DeletePeferences(gomock.Any(), tc.args.userID).
