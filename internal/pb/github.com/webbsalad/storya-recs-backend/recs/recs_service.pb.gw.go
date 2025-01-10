@@ -21,6 +21,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // Suppress "imported and not used" errors
@@ -190,25 +191,8 @@ func local_request_RecsService_GetNewRec_0(ctx context.Context, marshaler runtim
 }
 
 func request_RecsService_DeletePeferences_0(ctx context.Context, marshaler runtime.Marshaler, client RecsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DeletePreferencesRequest
+	var protoReq emptypb.Empty
 	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["user_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
-	}
-
-	protoReq.UserId, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
-	}
 
 	msg, err := client.DeletePeferences(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -216,25 +200,8 @@ func request_RecsService_DeletePeferences_0(ctx context.Context, marshaler runti
 }
 
 func local_request_RecsService_DeletePeferences_0(ctx context.Context, marshaler runtime.Marshaler, server RecsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DeletePreferencesRequest
+	var protoReq emptypb.Empty
 	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["user_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user_id")
-	}
-
-	protoReq.UserId, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
-	}
 
 	msg, err := server.DeletePeferences(ctx, &protoReq)
 	return msg, metadata, err
@@ -331,7 +298,7 @@ func RegisterRecsServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/recs.RecsService/DeletePeferences", runtime.WithHTTPPathPattern("/users/{user_id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/recs.RecsService/DeletePeferences", runtime.WithHTTPPathPattern("/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -461,7 +428,7 @@ func RegisterRecsServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/recs.RecsService/DeletePeferences", runtime.WithHTTPPathPattern("/users/{user_id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/recs.RecsService/DeletePeferences", runtime.WithHTTPPathPattern("/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -487,7 +454,7 @@ var (
 
 	pattern_RecsService_GetNewRec_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"new-rec"}, ""))
 
-	pattern_RecsService_DeletePeferences_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"users", "user_id"}, ""))
+	pattern_RecsService_DeletePeferences_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"users"}, ""))
 )
 
 var (
