@@ -38,3 +38,5 @@ proto-deps:
 	rm -rf $(VENDOR_DIR)/protoc-gen-validate
 
 
+mocks:
+	mockgen -source ./internal/repository/recs/repository.go -destination ./internal/repository/recs/mock/repository.go -package mock_recs
