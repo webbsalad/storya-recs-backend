@@ -21,6 +21,7 @@ PROTO_FILES := $(PROTO_SRC_DIR)/*.proto
 all: proto
 
 proto: proto-deps
+	rm -rf ./internal/pb/github.com/webbsalad/storya-recs-backend/recs/*
 	protoc $(PROTOC_FLAGS) $(PROTO_FILES)
 	protoc -I . $(GRPC_GATEWAY_FLAGS) $(PROTO_FILES)
 

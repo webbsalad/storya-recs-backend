@@ -30,7 +30,7 @@ service RecsService {
 
     rpc DeletePeferences(google.protobuf.Empty) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/users/"
+            delete: "/users"
         };
     };
 
